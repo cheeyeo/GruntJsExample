@@ -14,6 +14,7 @@
     "grunt-cssc": "*",
     "grunt-htmlhint": "*",
     "matchdep": "*",
-    "connect-livereload": "~0.3.0"
+    "connect-livereload": "~0.3.0",
+    "grunt-bower-install": "~0.6.1"
   }
 }

@@ -94,11 +94,20 @@ module.exports = function(grunt){
 			        files: ['assets/sass/**/*.scss'],
 			        tasks: ['buildcss'],
 							options: { livereload: true }
-			    }
-			}
+			    },
+				  bower: {
+							files: 'bower.json',
+							tasks: ['bower-install']
+				  }
+			},
+			'bower-install': {
+	      target: {
+	        html: 'index.html' // point to your HTML file.
+	      }
+	    }
     });
 
-		grunt.registerTask('build', ['uglify','sass','cssc','cssmin']);
+		grunt.registerTask('build', ['uglify','sass','cssc','cssmin','bower-install']);
 		
 		grunt.registerTask('server', ['build', 'connect:livereload','watch']);
 		
