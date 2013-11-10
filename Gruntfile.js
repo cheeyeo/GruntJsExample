@@ -1,15 +1,16 @@
+'use strict';
+var path = require('path');
+var LIVERELOAD_PORT = 35729;
+var lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
+
 var internalIp, lrSnippet;
 
-lrSnippet = require('connect-livereload')({
-  port: 35729
-});
-
-internalIp = 'localhost';
+lrSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
 
 var mountFolder;
 
 mountFolder = function(connect, dir) {
-  return connect["static"](require('path').resolve(dir));
+  return connect.static(require('path').resolve(dir));
 };
 
 module.exports = function(grunt){
@@ -20,12 +21,19 @@ module.exports = function(grunt){
     grunt.initConfig({
 			pkg: grunt.file.readJSON('package.json'),
 			connect: {
+				options: {
+					port: 9000,
+	        hostname: 'localhost',
+				},
 				livereload: {
 	      	options: {
-		        port: 9000,
-		        hostname: internalIp,
 		        middleware: function(connect) {
-		          return [lrSnippet, mountFolder(connect, './'), mountFolder(connect, 'build')];
+		          return [
+									lrSnippet, 
+									mountFolder(connect, './'), 
+									mountFolder(connect, 'build'),
+									mountFolder(connect, 'tmp')
+							];
 		        }
 		      }
 				}
@@ -46,10 +54,21 @@ module.exports = function(grunt){
 			        src: ['index.html']
 			    }
 			},
+			coffee: {
+			   dist: {
+			       files: [{
+			           expand: true,
+			           cwd: 'assets/js',
+			           src: '{,*/}*.coffee',
+			           dest: 'tmp/js',
+			           ext: '.js'
+			       }]
+			   }
+			},
 			uglify: {
 			    build: {
 			        files: {
-			            'build/js/base.min.js': ['assets/js/base.js']
+			            'tmp/assets/js/base.min.js': ['assets/**/*.js','tmp/js/**/*.js']
 			        }
 			    }
 			},
@@ -61,21 +80,20 @@ module.exports = function(grunt){
 			            consolidateMediaQueries:    true
 			        },
 			        files: {
-			            'build/css/master.css': 'build/css/master.css'
+			            'tmp/assets/css/master.css': 'tmp/assets/css/master.css'
 			        }
 			    }
 			},
 			cssmin: {
 			    build: {
-			        src: 'build/css/master.css',
-			        dest: 'build/css/master.css'
+			        src: 'tmp/assets/css/master.css',
+			        dest: 'tmp/assets/css/master.css'
 			    }
 			},
-
 			sass: {
 			    build: {
 			        files: {
-			            'build/css/master.css': 'assets/sass/master.scss'
+			            'tmp/assets/css/master.css': 'assets/**/*.scss'
 			        }
 			    }
 			},
@@ -85,29 +103,54 @@ module.exports = function(grunt){
 			        tasks: ['htmlhint'],
 							options: { livereload: true }
 			    },
-					js: {
-			        files: ['assets/js/base.js'],
-			        tasks: ['uglify'],
+					scripts: {
+			        files: [
+			          'assets/js/**/*.coffee',
+								'assets/js/**/*.js'
+			        ],
+			        tasks: ['build'],
 							options: { livereload: true }
 			    },
-					css: {
+					sass: {
 			        files: ['assets/sass/**/*.scss'],
-			        tasks: ['buildcss'],
+			        tasks: ['build'],
 							options: { livereload: true }
 			    },
 				  bower: {
 							files: 'bower.json',
-							tasks: ['bower-install']
+							tasks: ['build'],
+							options: { livereload: true }
 				  }
 			},
-			'bower-install': {
-	      target: {
-	        html: 'index.html' // point to your HTML file.
-	      }
-	    }
+	    bower: {
+				install: {
+		      options: {
+		        targetDir: './assets',
+						layout: 'byType',
+		        install: true,
+		        verbose: true,
+		        cleanTargetDir: false,
+		        cleanBowerDir: false,
+		        bowerOptions: {}
+		      }
+		    }
+			},
+			//Clean tmp/dist Folders
+	    clean:{
+		    dev: 'tmp',
+				dist: 'dist'
+	    },
+	    // copy
+	    copy:{
+		    main:{
+			    files:[
+						{expand: true, cwd: 'tmp/assets', src: ['**'], dest: 'dist/assets'}
+					]
+		    }
+			}
     });
 
-		grunt.registerTask('build', ['uglify','sass','cssc','cssmin','bower-install']);
+		grunt.registerTask('build', ['clean','sass','cssc','cssmin','bower','coffee','uglify','copy']);
 		
 		grunt.registerTask('server', ['build', 'connect:livereload','watch']);
 		

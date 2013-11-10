@@ -5,24 +5,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>TEST</title>
+  <title>TEST HTML</title>
 
-  <link rel="stylesheet"  href="build/css/master.css">
+  <link rel="stylesheet"  href="dist/assets/css/master.css">
   
   </head>
   <body>
 	  <label for="firstname">Enter your first name</label>
     <input id="firstname" name="firstname" type="text">
     <p id="namevalidation" class="validation"></p>
-
-		<!-- bower:js -->
-		<script src="bower_components/jquery/jquery.js"></script>
-		<!-- endbower -->
 		
-    <script type="text/javascript" src="build/js/base.min.js"></script>
+    <script type="text/javascript" src="dist/assets/js/base.min.js"></script>
     <script type="text/javascript">
       $(function(){
 				console.log('JQUERY IS INSTALLED!');
+				_.each([1, 2, 3], function(num){ console.log(num) });
 			});
     </script>
   </body>

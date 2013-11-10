@@ -27,6 +27,10 @@ Running it
 
     grunt server 
 
-Access it at http://localhost:9000
+Access it at http://localhost:9000.
+
+The server uses livereload so any changes to the assets js and css will be picked up.
+
+There is also an additional task that tracks if the bower.json has changed and if so, also updates the test html files.
 
 

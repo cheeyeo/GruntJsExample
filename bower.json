@@ -2,6 +2,15 @@
     "name":  "SampleGrunt",
     "version": "0.0.1",
     "dependencies": {
-		"jquery": "latest"
-    }
+       "jquery": "latest",
+       "underscore" : "latest"
+    },
+	"exportsOverride": {
+	  "jquery": {
+	    "js": "jquery.js"
+	  },
+	  "underscore": {
+	    "js": "underscore.js"
+	  }
+  }
 }
